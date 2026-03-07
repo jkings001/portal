@@ -2,12 +2,12 @@
 
 ## Informações do Projeto
 - **Domínio**: jkings.solutions
-- **Tecnologia**: React 19 + Node.js 14 + Express 4 + MySQL
-- **Versão Node.js Hostinger**: 14.x
+- **Tecnologia**: React 19 + Node.js 20+ + Express 4 + MySQL
+- **Versão Node.js Hostinger**: 20.x ou superior (Recomendado)
 
 ## Pré-requisitos
 1. Acesso FTP à Hostinger
-2. Node.js 14 ativado na Hostinger
+2. Node.js 20+ ativado na Hostinger
 3. Banco de dados MySQL criado
 4. Variáveis de ambiente configuradas
 
@@ -21,7 +21,7 @@
 1. No cPanel, procure por "Node.js Manager" ou "Node.js"
 2. Clique em "Create Application"
 3. Configure:
-   - **Node.js Version**: 14.x
+   - **Node.js Version**: 20.x (ou a mais recente disponível)
    - **Application Root**: `/home/jkings/public_html/portal-atendimento`
    - **Application URL**: jkings.solutions
    - **Application Startup File**: `dist/index.js`
@@ -146,7 +146,7 @@ node dist/index.js
 
 ### Aplicação não inicia
 - Verifique os logs no cPanel
-- Confirme que Node.js 14 está ativado
+- Confirme que Node.js 20+ está ativado (Node.js 14 causará erros com Vite 7 e React 19)
 - Verifique se `dist/index.js` existe
 
 ## Estrutura de Pastas no Servidor
