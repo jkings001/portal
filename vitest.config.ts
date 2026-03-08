@@ -1,7 +1,12 @@
-import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "url";
 import path from "path";
+import { defineConfig } from "vitest/config";
 
-const templateRoot = path.resolve(import.meta.dirname);
+// Compatível com Node.js 18+ e esbuild ESM bundle
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const templateRoot = path.resolve(__dirname);
 
 export default defineConfig({
   root: templateRoot,
