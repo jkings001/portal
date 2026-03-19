@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { ArrowLeft, Play, FileText, BookOpen, Clock, BarChart3, Download, CheckCircle } from "lucide-react";
+import { Play, FileText, BookOpen, Clock, BarChart3, Download, CheckCircle } from "lucide-react";
+import BackButton from "@/components/BackButton";
 import { useLocation, useRoute } from "wouter";
 import UserMenu from "@/components/UserMenu";
-import BackButton from "@/components/BackButton";
 import {
   currentUser,
   getCourseById,
@@ -62,14 +62,14 @@ export default function TrainingDetails() {
     <div
       className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-black"
       style={{
-        backgroundImage: "url('/images/bg-gradient-hero.jpg')",
+        backgroundImage: "url('https://files.manuscdn.com/user_upload_by_module/session_file/310519663168635381/csCxwKFSoQSwqEHT.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed"
       }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/30 to-black/50 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, rgba(15,23,42,0.3) 0%, rgba(0,0,0,0.7) 100%)' }} />
 
       <div className="relative z-10">
         {/* Header com Thumbnail */}
@@ -82,13 +82,9 @@ export default function TrainingDetails() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
 
           {/* Botão Voltar */}
-          <button
-            onClick={handleBack}
-            className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-black/50 hover:bg-black/70 text-white px-4 py-2 rounded-lg transition-all"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Voltar
-          </button>
+          <div className="absolute top-4 left-4 z-10">
+            <BackButton to="/training" />
+          </div>
 
           {/* Título sobre a imagem */}
           <div className="absolute bottom-0 left-0 right-0 p-8">

@@ -1,86 +1,141 @@
-import React, { createContext, useContext, ReactNode } from "react";
-import { trpc } from "@/lib/trpc";
-import { getLoginUrl } from "@/const";
-import type { User } from "@shared/types";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 /**
- * AuthContext — integração real com o backend via tRPC.
- *
- * O usuário autenticado é obtido de `auth.me` (sessão via cookie JWT).
- * O login é feito pelo fluxo OAuth (redirecionamento para a página de login).
- * O logout limpa o cookie de sessão via mutation tRPC.
- *
- * Roles disponíveis (definidas no banco): 'user' | 'admin' | 'manager'
+ * AuthContext - Gerencia autenticação e perfis de usuário
+ * Integrado com servidor backend via /api/auth/login
+ * 
+ * Roles disponíveis: 'user' | 'admin'
+ * Persiste dados em localStorage
  */
 
-export type UserRole = "user" | "admin" | "manager";
+export type UserRole = 'user' | 'admin' | 'manager' | 'agent';
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: UserRole;
+  department?: string;
+  avatar?: string;
+}
 
 export interface AuthContextType {
-  /** Usuário autenticado ou null se não logado */
   currentUser: User | null;
-  /** true se há sessão ativa */
   isAuthenticated: boolean;
-  /** true enquanto a sessão está sendo verificada */
-  isLoading: boolean;
-  /** Redireciona para a página de login OAuth */
-  login: () => void;
-  /** Encerra a sessão via tRPC e redireciona para login */
-  logout: () => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  switchProfile: (email: string, password: string) => Promise<boolean>;
+  getAllUsers: () => User[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const utils = trpc.useUtils();
-
-  // Busca o usuário da sessão atual (cookie JWT)
-  const meQuery = trpc.auth.me.useQuery(undefined, {
-    retry: false,
-    refetchOnWindowFocus: false,
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    // Carregar usuário do localStorage se existir
+    // Tentar primeiro 'user' (usado por Home.tsx), depois 'currentUser' (compatibilidade)
+    let stored = localStorage.getItem('user');
+    if (!stored) {
+      stored = localStorage.getItem('currentUser');
+    }
+    return stored ? JSON.parse(stored) : null;
   });
 
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      // Limpa o cache local do usuário
-      utils.auth.me.setData(undefined, null);
-    },
-  });
+  // Sincronizar com localStorage sempre que a página muda
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      let stored = localStorage.getItem('user');
+      if (!stored) {
+        stored = localStorage.getItem('currentUser');
+      }
+      if (stored) {
+        setCurrentUser(JSON.parse(stored));
+      } else {
+        setCurrentUser(null);
+      }
+    };
 
-  const login = () => {
-    window.location.href = getLoginUrl();
-  };
+    // Sincronizar imediatamente
+    handleStorageChange();
 
-  const logout = async () => {
+    // Sincronizar quando localStorage muda em outra aba
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      await logoutMutation.mutateAsync();
-    } finally {
-      utils.auth.me.setData(undefined, null);
-      await utils.auth.me.invalidate();
-      window.location.href = "/";
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success && data.user) {
+        // Normalizar role para 'user' ou 'admin'
+        const normalizedUser: User = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name || email.split('@')[0],
+          role: (['admin', 'manager', 'agent'].includes(data.user.role) ? data.user.role : 'user') as UserRole,
+          department: data.user.department,
+          avatar: data.user.avatar,
+        };
+
+        setCurrentUser(normalizedUser);
+        // Salvar em ambas as chaves para compatibilidade com Home.tsx
+        localStorage.setItem('user', JSON.stringify(normalizedUser));
+        localStorage.setItem('currentUser', JSON.stringify(normalizedUser));
+        localStorage.setItem('authToken', data.token || '');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      return false;
     }
   };
 
-  const currentUser = meQuery.data ?? null;
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('isAuthenticated');
+    // Disparar evento de armazenamento para sincronizar com outras abas
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const switchProfile = async (email: string, password: string): Promise<boolean> => {
+    return login(email, password);
+  };
+
+  const getAllUsers = (): User[] => {
+    // Retorna apenas o usuário atual
+    return currentUser ? [currentUser] : [];
+  };
 
   const value: AuthContextType = {
     currentUser,
-    isAuthenticated: Boolean(currentUser),
-    isLoading: meQuery.isLoading,
+    isAuthenticated: currentUser !== null,
     login,
     logout,
+    switchProfile,
+    getAllUsers,
   };
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider");
+    throw new Error('useAuth deve ser usado dentro de AuthProvider');
   }
   return context;
 };

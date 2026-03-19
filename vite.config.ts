@@ -3,21 +3,15 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
-
-// Compatível com Node.js 18+ e esbuild bundle ESM
-// import.meta.dirname só existe no Node.js 21.2+ e não é injetado pelo esbuild
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
 // Writes browser logs directly to files, trimmed when exceeding size limit
 // =============================================================================
 
-const PROJECT_ROOT = __dirname;
+const PROJECT_ROOT = import.meta.dirname;
 const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
 const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB per log file
 const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // Trim to 60% to avoid constant re-trimming
@@ -162,17 +156,47 @@ export default defineConfig({
   plugins,
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client", "src"),
-      "@shared": path.resolve(__dirname, "shared"),
-      "@assets": path.resolve(__dirname, "attached_assets"),
+      "@": path.resolve(import.meta.dirname, "client", "src"),
+      "@shared": path.resolve(import.meta.dirname, "shared"),
+      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
+    // Ensure a single React instance across all packages to prevent
+    // "Cannot read properties of null (reading 'useState')" errors
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
-  envDir: path.resolve(__dirname),
-  root: path.resolve(__dirname, "client"),
-  publicDir: path.resolve(__dirname, "client", "public"),
+  envDir: path.resolve(import.meta.dirname),
+  root: path.resolve(import.meta.dirname, "client"),
+  publicDir: path.resolve(import.meta.dirname, "client", "public"),
   build: {
-    outDir: path.resolve(__dirname, "dist/public"),
+    outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // Estratégia de chunking: vendor único para todos os node_modules
+    // Evita dependências circulares entre chunks de dependências
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        // IMPORTANTE: Não separar react/react-dom em chunk próprio.
+        // Isso causa erro "Cannot read properties of undefined (reading 'exports')"
+        // por dependência circular entre chunks no build de produção.
+        // Estratégia segura: apenas separar bibliotecas que não dependem do react core.
+        manualChunks: (id) => {
+          if (!id.includes('node_modules/')) return;
+          // Recharts e D3 são pesados e independentes entre si
+          if (id.includes('recharts') || id.includes('d3-') || id.includes('d3/')) return 'charts';
+          // Framer Motion é grande e carregado sob demanda
+          if (id.includes('framer-motion')) return 'framer-motion';
+          // Lucide é grande e usado em muitas páginas
+          if (id.includes('lucide-react')) return 'icons';
+          // tRPC + React Query juntos (sempre usados juntos)
+          if (id.includes('@trpc') || id.includes('@tanstack/react-query')) return 'trpc-query';
+          // Utilitários de dados
+          if (id.includes('xlsx') || id.includes('papaparse') || id.includes('jspdf')) return 'data-utils';
+          // Todo o resto (incluindo react, react-dom, radix, etc.) em vendor único
+          // Isso evita ciclos de dependência entre chunks
+          return 'vendor';
+        },
+      },
+    },
   },
   server: {
     host: true,

@@ -1,0 +1,1 @@
+ALTER TABLE `ativos` MODIFY COLUMN `tipo` enum('notebook','smartphone','tablet','monitor','licenca','outros') NOT NULL;

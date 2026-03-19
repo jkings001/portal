@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, BookOpen, FileText, BarChart3, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, FileText, BarChart3, ChevronRight, MessageSquare, Building2, Zap, GraduationCap, Headphones, Clock, BarChart2 } from 'lucide-react';
 import { useLocation, Link } from 'wouter';
 
 /**
@@ -23,38 +23,52 @@ const AdminSidebar: React.FC = () => {
     {
       icon: <LayoutDashboard size={20} />,
       label: 'Dashboard',
-      href: '/admin',
+      href: '/management',
     },
     {
       icon: <Users size={20} />,
       label: 'Usuários',
-      href: '/admin/users',
-      badge: 12,
+      href: '/admin/server',
     },
     {
-      icon: <BookOpen size={20} />,
+      icon: <GraduationCap size={20} />,
       label: 'Treinamentos',
-      href: '/admin/trainings',
+      href: '/admin-panel',
     },
+    {
+      icon: <Headphones size={20} />,
+      label: 'TeamsWEB',
+      href: '/teamsweb',
+    },
+    {
+      icon: <Clock size={20} />,
+      label: 'Histórico de Chamados',
+      href: '/reports',
+    },
+    {
+      icon: <BarChart2 size={20} />,
+      label: 'Management',
+      href: '/management',
+    },
+    {
+      icon: <Building2 size={20} />,
+      label: 'Empresas',
+      href: '/companies',
+    },
+
     {
       icon: <FileText size={20} />,
-      label: 'Arquivos',
-      href: '/admin/files',
-      badge: 5,
-    },
-    {
-      icon: <BarChart3 size={20} />,
-      label: 'Relatórios',
-      href: '/admin/reports',
+      label: 'Apresentação',
+      href: '/presentation',
     },
   ];
 
   const isActive = (href: string) => location === href;
 
   return (
-    <aside className="fixed left-0 top-20 h-[calc(100vh-80px)] w-64 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border-r border-white/10 overflow-y-auto hidden lg:block z-30">
+    <aside className="fixed left-0 top-20 h-[calc(100vh-80px)] w-56 md:w-64 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border-r border-white/10 overflow-y-auto z-30 transition-all duration-300">
       {/* Navegação */}
-      <nav className="p-6 space-y-2">
+      <nav className="p-4 md:p-6 space-y-2">
         {menuItems.map((item, index) => (
           <Link
             key={index}
@@ -89,7 +103,7 @@ const AdminSidebar: React.FC = () => {
       </nav>
 
       {/* Seção de Atalhos */}
-      <div className="px-6 py-8 border-t border-white/10">
+      <div className="px-4 md:px-6 py-8 border-t border-white/10">
         <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Atalhos Rápidos</h4>
         <div className="space-y-2">
           <button className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300">
@@ -105,7 +119,7 @@ const AdminSidebar: React.FC = () => {
       </div>
 
       {/* Info Box */}
-      <div className="px-6 py-6 border-t border-white/10">
+      <div className="px-4 md:px-6 py-6 border-t border-white/10">
         <div className="bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 rounded-lg p-4">
           <h4 className="text-sm font-bold text-cyan-300 mb-2">💡 Dica</h4>
           <p className="text-xs text-slate-300 leading-relaxed">

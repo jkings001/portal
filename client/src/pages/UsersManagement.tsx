@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
-import { trpc } from '@/lib/trpc';
-import { Users, Shield, UserCheck, UserX, Edit2, Trash2, Plus, Loader } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Users, Shield, UserCheck, UserX, Edit2, Trash2, Plus } from 'lucide-react';
 
 /**
- * UsersManagement - Pagina de gerenciamento de usuarios
- *
- * Busca usuarios diretamente do backend via tRPC.
- * Roles: user, manager, admin
+ * UsersManagement - Página de gerenciamento de usuários
+ * 
+ * Permite visualizar, editar e gerenciar usuários com diferentes roles
+ * Roles: Usuario, Gerente, Administrador
  */
 
 const UsersManagement: React.FC = () => {
-  const { data: users = [], isLoading } = trpc.user.list.useQuery();
-  const [selectedRole, setSelectedRole] = useState<'todos' | 'user' | 'manager' | 'admin'>('todos');
+  const { getAllUsers } = useAuth();
+  const users = getAllUsers();
+  const [selectedRole, setSelectedRole] = useState<'todos' | 'usuario' | 'gerente' | 'admin'>('todos');
 
   const filteredUsers = selectedRole === 'todos' ? users : users.filter((u) => u.role === selectedRole);
 
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
-      user: 'Usuario',
-      manager: 'Gerente',
+      usuario: 'Usuário',
+      gerente: 'Gerente',
       admin: 'Administrador',
     };
     return labels[role] || role;
@@ -28,9 +29,9 @@ const UsersManagement: React.FC = () => {
     switch (role) {
       case 'admin':
         return 'bg-red-500/20 text-red-300 border-red-500/30';
-      case 'manager':
+      case 'gerente':
         return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-      case 'user':
+      case 'usuario':
         return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
       default:
         return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
@@ -41,22 +42,14 @@ const UsersManagement: React.FC = () => {
     switch (role) {
       case 'admin':
         return <Shield size={18} className="text-red-400" />;
-      case 'manager':
+      case 'gerente':
         return <UserCheck size={18} className="text-amber-400" />;
-      case 'user':
+      case 'usuario':
         return <Users size={18} className="text-blue-400" />;
       default:
         return <UserX size={18} className="text-slate-400" />;
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <Loader className="w-8 h-8 text-cyan-400 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 md:p-8">
@@ -80,8 +73,8 @@ const UsersManagement: React.FC = () => {
         <div className="flex gap-3 flex-wrap">
           {[
             { label: 'Todos', value: 'todos' },
-            { label: 'Usuarios', value: 'user' },
-            { label: 'Gerentes', value: 'manager' },
+            { label: 'Usuários', value: 'usuario' },
+            { label: 'Gerentes', value: 'gerente' },
             { label: 'Administradores', value: 'admin' },
           ].map((filter) => (
             <button

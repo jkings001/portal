@@ -3,7 +3,7 @@
 .pnpm-store/
 
 # Build outputs
-dist/
+# dist/ removido do ignore para garantir deploy Railway com codigo correto
 build/
 *.dist
 
@@ -105,3 +105,8 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Certificados de criptografia Teams (NUNCA commitar a chave privada)
+server/teams-private.pem
+server/teams-cert.pem
+*.pem

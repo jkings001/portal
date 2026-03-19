@@ -126,45 +126,53 @@ export default function AdminPanel() {
   );
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-black"
+    <div 
+      className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
       style={{
-        backgroundImage: "url('/images/bg-gradient-hero.jpg')",
+        backgroundImage: "url('https://private-us-east-1.manuscdn.com/sessionFile/2CKTBX4DHqsYpFG9sDRB7L/sandbox/HvVqCE7k0Noj0nuQ0XGqJh-img-2_1770239208000_na1fn_YmctZGFzaGJvYXJkLWFkbWlu.jpg?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvMkNLVEJYNERIcXNZcEZHOXNEUkI3TC9zYW5kYm94L0h2VnFDRTdrME5vajBudVEwWEdxSmgtaW1nLTJfMTc3MDIzOTIwODAwMF9uYTFmbl9ZbWN0WkdGemFHSnZZWEprTFdGa2JXbHUuanBnP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTkyMCxoXzE5MjAvZm9ybWF0LHdlYnAvcXVhbGl0eSxxXzgwIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzk4NzYxNjAwfX19XX0_&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=NS-In4kf-gU2f8MNkw040n4ixh32Z2cc-0HYXOh81AIwpgryUgApEP8JncHcE39YUjfiXPZl6AIxXAOWaNTE0m0fxigaHbA4VxKK0AaGYhlWgqoy-bCaY0PmF7eQmIkp3VzX-t1UWtf3f4bCbow9IJLuATvgXfVUT7IoNP7ulSJ~CqEQ57brJiqyCMhnMGZFG6szGMbWx8lEVatOkCqTUK8Tn5yh9pDhnMO8CAgP-FE3WgXt9w9Oezf09gHG2Mt9srbGBgNbp0TUH71yQzZnzt~fdn72AF4h4llI396h0oUrFfTp1ftDrhFsCivVJy6O5-X5jIvQMlxqDbDNLBcIFw__')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed"
       }}
     >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/30 to-black/50 pointer-events-none" />
+      {/* Background Pattern */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(6,182,212,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(6,182,212,0.1),transparent_50%)]"></div>
+      </div>
 
       <div className="relative z-10">
         {/* Header */}
         <header className="glassmorphic border-b border-white/10 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <img 
-                  src="/images/logo-jkings.png" 
+                  src="/images/logo-jkings-dashboard.png" 
                   alt="JKINGS" 
-                  className="h-8"
+                  className="h-6 sm:h-8 transition-all duration-300 hover:scale-110"
+                  style={{
+                    filter: 'drop-shadow(0 0 15px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 30px rgba(34, 211, 238, 0.2))'
+                  }}
                 />
-                <div>
-                  <h1 className="text-white font-bold">Gestão de Treinamentos</h1>
+                <div className="hidden sm:block">
+                  <h1 className="text-white font-bold text-sm sm:text-base">Gestão de Treinamentos</h1>
                   <p className="text-gray-300 text-xs">Painel do Administrador</p>
                 </div>
               </div>
 
-              <BackButton />
-              <div className="pl-4 border-l border-white/20">
-                <UserMenu showHome={true} />
+              <div className="flex items-center gap-2 sm:gap-4">
+                <BackButton />
+                <div className="border-l border-white/20 pl-2 sm:pl-4">
+                  <UserMenu showHome={true} />
+                </div>
               </div>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {viewMode === "list" ? (
             <>
               {/* Toolbar */}
@@ -190,60 +198,120 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              {/* Tabela de Cursos */}
-              <div className="glassmorphic rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-white/10 bg-white/5">
-                        <th className="px-6 py-4 text-left text-white font-bold text-sm">Título</th>
-                        <th className="px-6 py-4 text-left text-white font-bold text-sm">Instrutor</th>
-                        <th className="px-6 py-4 text-left text-white font-bold text-sm">Tipo</th>
-                        <th className="px-6 py-4 text-left text-white font-bold text-sm">Status</th>
-                        <th className="px-6 py-4 text-left text-white font-bold text-sm">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredCourses.map((course) => (
-                        <tr key={course.id} className="border-b border-white/10 hover:bg-white/5 transition-colors">
-                          <td className="px-6 py-4 text-gray-300 text-sm">{course.title}</td>
-                          <td className="px-6 py-4 text-gray-300 text-sm">{course.instructorName}</td>
-                          <td className="px-6 py-4 text-gray-300 text-sm capitalize">
-                            {course.contentType === "video" && "🎥 Vídeo"}
-                            {course.contentType === "pdf" && "📄 PDF"}
-                            {course.contentType === "written" && "📝 Escrito"}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              course.status === "published"
-                                ? "bg-green-500/20 text-green-400"
-                                : "bg-yellow-500/20 text-yellow-400"
-                            }`}>
-                              {course.status === "published" ? "Publicado" : "Rascunho"}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => handleEditCourse(course)}
-                                className="p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
-                                title="Editar"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteCourse(course.id)}
-                                className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
-                                title="Deletar"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
+              {/* Tabela de Cursos - Responsiva */}
+              <div className="space-y-4">
+                {/* Desktop View */}
+                <div className="hidden md:block glassmorphic rounded-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-white/10 bg-white/5">
+                          <th className="px-4 py-3 text-left text-white font-bold text-sm">Título</th>
+                          <th className="px-4 py-3 text-left text-white font-bold text-sm">Instrutor</th>
+                          <th className="px-4 py-3 text-left text-white font-bold text-sm">Tipo</th>
+                          <th className="px-4 py-3 text-left text-white font-bold text-sm">Duração</th>
+                          <th className="px-4 py-3 text-left text-white font-bold text-sm">Status</th>
+                          <th className="px-4 py-3 text-left text-white font-bold text-sm">Ações</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {filteredCourses.map((course) => (
+                          <tr key={course.id} className="border-b border-white/10 hover:bg-white/5 transition-colors">
+                            <td className="px-4 py-3 text-gray-300 text-sm font-medium">{course.title}</td>
+                            <td className="px-4 py-3 text-gray-300 text-sm">{course.instructorName}</td>
+                            <td className="px-4 py-3 text-gray-300 text-sm capitalize">
+                              {course.contentType === "video" && "🎥 Vídeo"}
+                              {course.contentType === "pdf" && "📄 PDF"}
+                              {course.contentType === "written" && "📝 Escrito"}
+                            </td>
+                            <td className="px-4 py-3 text-gray-300 text-sm">{course.durationMinutes}min</td>
+                            <td className="px-4 py-3 text-sm">
+                              <span className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                                course.status === "published"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : "bg-yellow-500/20 text-yellow-400"
+                              }`}>
+                                {course.status === "published" ? "Publicado" : "Rascunho"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleEditCourse(course)}
+                                  className="p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                                  title="Editar"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCourse(course.id)}
+                                  className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                                  title="Deletar"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Mobile View - Cards */}
+                <div className="md:hidden space-y-3">
+                  {filteredCourses.map((course) => (
+                    <div key={course.id} className="glassmorphic rounded-lg p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1">
+                            <h3 className="text-white font-bold text-sm line-clamp-2">{course.title}</h3>
+                            <p className="text-gray-400 text-xs mt-1">{course.instructorName}</p>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                            course.status === "published"
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-yellow-500/20 text-yellow-400"
+                          }`}>
+                            {course.status === "published" ? "Pub" : "Rascunho"}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs text-gray-400">
+                          <div>
+                            <p className="text-gray-500">Tipo</p>
+                            <p className="text-white font-medium">
+                              {course.contentType === "video" && "🎥"}
+                              {course.contentType === "pdf" && "📄"}
+                              {course.contentType === "written" && "📝"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Duração</p>
+                            <p className="text-white font-medium">{course.durationMinutes}min</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Nível</p>
+                            <p className="text-white font-medium capitalize text-xs">{course.level}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 pt-2 border-t border-white/10">
+                          <button
+                            onClick={() => handleEditCourse(course)}
+                            className="flex-1 p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors text-xs font-medium flex items-center justify-center gap-1"
+                          >
+                            <Edit2 className="w-3 h-3" /> Editar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCourse(course.id)}
+                            className="flex-1 p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs font-medium flex items-center justify-center gap-1"
+                          >
+                            <Trash2 className="w-3 h-3" /> Deletar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -255,8 +323,8 @@ export default function AdminPanel() {
             </>
           ) : (
             /* Formulário */
-            <div className="max-w-2xl mx-auto">
-              <div className="glassmorphic rounded-xl p-8">
+            <div className="w-full max-w-4xl mx-auto">
+              <div className="glassmorphic rounded-xl p-4 sm:p-8">
                 <h2 className="text-2xl font-bold text-white mb-6">
                   {editingId ? "Editar Treinamento" : "Novo Treinamento"}
                 </h2>
@@ -327,6 +395,19 @@ export default function AdminPanel() {
                       rows={4}
                       className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                       required
+                    />
+                  </div>
+
+                  {/* Categoria */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">
+                      Categoria
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     />
                   </div>
 

@@ -1,18 +1,17 @@
 // Preconfigured storage helpers for Manus WebDev templates
 // Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
+// Falls back to data URLs when credentials are not available
 
 import { ENV } from './_core/env';
 
 type StorageConfig = { baseUrl: string; apiKey: string };
 
-function getStorageConfig(): StorageConfig {
+function getStorageConfig(): StorageConfig | null {
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
 
   if (!baseUrl || !apiKey) {
-    throw new Error(
-      "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY"
-    );
+    return null;
   }
 
   return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
@@ -67,13 +66,39 @@ function buildAuthHeaders(apiKey: string): HeadersInit {
   return { Authorization: `Bearer ${apiKey}` };
 }
 
+/**
+ * Convert buffer to base64 data URL
+ */
+function bufferToDataUrl(data: Buffer | Uint8Array | string, contentType: string): string {
+  let base64: string;
+  
+  if (typeof data === "string") {
+    base64 = data;
+  } else {
+    base64 = Buffer.from(data).toString("base64");
+  }
+  
+  return `data:${contentType};base64,${base64}`;
+}
+
 export async function storagePut(
   relKey: string,
   data: Buffer | Uint8Array | string,
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = getStorageConfig();
   const key = normalizeKey(relKey);
+  
+  // If credentials are not available, use data URL as fallback
+  if (!config) {
+    console.warn(
+      "[Storage] BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY not configured. Using data URL fallback."
+    );
+    const url = bufferToDataUrl(data, contentType);
+    return { key, url };
+  }
+  
+  const { baseUrl, apiKey } = config;
   const uploadUrl = buildUploadUrl(baseUrl, key);
   const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
   const response = await fetch(uploadUrl, {
@@ -93,8 +118,17 @@ export async function storagePut(
 }
 
 export async function storageGet(relKey: string): Promise<{ key: string; url: string; }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = getStorageConfig();
   const key = normalizeKey(relKey);
+  
+  // If credentials are not available, throw error for download
+  if (!config) {
+    throw new Error(
+      "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY for download operations"
+    );
+  }
+  
+  const { baseUrl, apiKey } = config;
   return {
     key,
     url: await buildDownloadUrl(baseUrl, key, apiKey),

@@ -1,0 +1,1 @@
+ALTER TABLE `departments` ADD `responsibleUserId` int;

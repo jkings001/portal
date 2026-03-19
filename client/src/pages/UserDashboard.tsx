@@ -86,7 +86,7 @@ const UserDashboard: React.FC = () => {
   };
 
   const handleSwitchToAdmin = () => {
-    window.location.href = '/admin';
+    window.location.href = '/management';
   };
 
   return (
@@ -179,7 +179,7 @@ const UserDashboard: React.FC = () => {
             </div>
             {currentUser?.role === 'admin' && (
               <a
-                href="/admin"
+                href="/management"
                 className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap"
               >
                 <Shield size={20} />

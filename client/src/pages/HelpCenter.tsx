@@ -91,7 +91,7 @@ export default function HelpCenter() {
       }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/30 to-black/50 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, rgba(15,23,42,0.3) 0%, rgba(0,0,0,0.7) 100%)' }} />
 
       <div className="relative z-10">
         {/* Header */}
@@ -100,9 +100,12 @@ export default function HelpCenter() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/images/logo-jkings.png" 
+                  src="/images/logo-jkings-dashboard.png" 
                   alt="JKINGS" 
-                  className="h-8"
+                  className="h-8 transition-all duration-300 hover:scale-110"
+                  style={{
+                    filter: 'drop-shadow(0 0 15px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 30px rgba(34, 211, 238, 0.2))'
+                  }}
                 />
                 <div>
                   <h1 className="text-white font-bold">Central de Ajuda</h1>

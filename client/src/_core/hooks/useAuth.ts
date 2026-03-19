@@ -2,6 +2,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { TRPCClientError } from "@trpc/client";
 import { useCallback, useEffect, useMemo } from "react";
+import { useLocation } from "wouter";
 
 type UseAuthOptions = {
   redirectOnUnauthenticated?: boolean;
@@ -12,10 +13,17 @@ export function useAuth(options?: UseAuthOptions) {
   const { redirectOnUnauthenticated = false, redirectPath = getLoginUrl() } =
     options ?? {};
   const utils = trpc.useUtils();
+  const [, setLocation] = useLocation();
 
   const meQuery = trpc.auth.me.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
+  });
+
+  const loginMutation = trpc.auth.login.useMutation({
+    onSuccess: () => {
+      utils.auth.me.invalidate();
+    },
   });
 
   const logoutMutation = trpc.auth.logout.useMutation({
@@ -23,6 +31,15 @@ export function useAuth(options?: UseAuthOptions) {
       utils.auth.me.setData(undefined, null);
     },
   });
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const result = await loginMutation.mutateAsync({ email, password });
+      await utils.auth.me.invalidate();
+      return result;
+    },
+    [loginMutation, utils]
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -38,14 +55,11 @@ export function useAuth(options?: UseAuthOptions) {
     } finally {
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
+      setLocation("/");
     }
-  }, [logoutMutation, utils]);
+  }, [logoutMutation, utils, setLocation]);
 
   const state = useMemo(() => {
-    localStorage.setItem(
-      "manus-runtime-user-info",
-      JSON.stringify(meQuery.data)
-    );
     return {
       user: meQuery.data ?? null,
       loading: meQuery.isLoading || logoutMutation.isPending,
@@ -66,19 +80,20 @@ export function useAuth(options?: UseAuthOptions) {
     if (state.user) return;
     if (typeof window === "undefined") return;
     if (window.location.pathname === redirectPath) return;
-
-    window.location.href = redirectPath
+    setLocation(redirectPath);
   }, [
     redirectOnUnauthenticated,
     redirectPath,
     logoutMutation.isPending,
     meQuery.isLoading,
     state.user,
+    setLocation,
   ]);
 
   return {
     ...state,
     refresh: () => meQuery.refetch(),
+    login,
     logout,
   };
 }

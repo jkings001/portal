@@ -68,43 +68,43 @@ export const currentUser: User = {
 export const mockCourses: Course[] = [
   {
     id: "course-001",
-    title: "Introdução ao JavaScript Moderno",
-    instructorName: "João Silva",
-    instructorBio: "Desenvolvedor Full Stack com 10 anos de experiência",
-    shortDesc: "Aprenda os fundamentos do JavaScript ES6+ com exemplos práticos",
-    fullDesc: "Neste curso completo, você aprenderá desde os conceitos básicos até técnicas avançadas de JavaScript moderno. Cobriremos arrow functions, destructuring, async/await e muito mais.",
-    durationMinutes: 180,
-    thumbnailUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&h=300&fit=crop",
-    contentType: "video",
-    contentUrl: "https://example.com/videos/js-intro.mp4",
+    title: "Integração de Novos Colaboradores",
+    instructorName: "Jeferson Reis",
+    instructorBio: "Gerente de Tecnologia e Recursos Humanos",
+    shortDesc: "Informações sobre o departamento de Tecnologia, sistemas de chamados, controles de acessos",
+    fullDesc: "Bem-vindo ao departamento de Tecnologia! Este curso essencial fornece informações completas sobre: estrutura do departamento, como usar o sistema de chamados (tickets), políticas de acesso, segurança da informação e integração com os sistemas internos. Aprenda tudo que você precisa para começar com sucesso.",
+    durationMinutes: 120,
+    thumbnailUrl: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663168635381/toGEtmZswpDFQnom.jpg",
+    contentType: "written",
+    contentData: "# Integração de Novos Colaboradores\n\n## Bem-vindo ao Departamento de Tecnologia\n\n### Estrutura do Departamento\nConheça a equipe, hierarquia e responsabilidades...\n\n### Sistema de Chamados (Tickets)\nComo abrir, acompanhar e resolver tickets de suporte...\n\n### Controles de Acesso\nPermissões, autenticação e segurança da informação...\n\n### Integração com Sistemas Internos\nAcesso a ferramentas e plataformas corporativas...",
     previewRules: {
-      type: "video",
-      value: "00:00:00 - 00:05:00"
+      type: "written",
+      value: "Introdução e primeiros 3 tópicos"
     },
     status: "published",
-    createdAt: "2025-01-15",
-    category: "Programação",
+    createdAt: "2025-02-01",
+    category: "Onboarding",
     level: "beginner"
   },
   {
     id: "course-002",
-    title: "React Avançado: Hooks e Context API",
-    instructorName: "Maria Santos",
-    instructorBio: "Especialista em React com contribuições em projetos open source",
-    shortDesc: "Domine hooks, Context API e otimizações de performance em React",
-    fullDesc: "Aprenda técnicas avançadas de React incluindo custom hooks, Context API para state management, e como otimizar o desempenho de suas aplicações.",
-    durationMinutes: 240,
-    thumbnailUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&h=300&fit=crop",
-    contentType: "video",
-    contentUrl: "https://example.com/videos/react-advanced.mp4",
+    title: "Melhores Práticas de Uso de Equipamentos",
+    instructorName: "Jeferson Reis",
+    instructorBio: "Gerente de Tecnologia e Segurança da Informação",
+    shortDesc: "Informações sobre uso de Laptops, Smartphones, dispositivos internos, rede interna, acessos e permissões",
+    fullDesc: "Aprenda as melhores práticas para usar e cuidar dos equipamentos fornecidos pela empresa. Este curso cobre: uso correto de laptops e smartphones, manutenção de dispositivos, acesso à rede interna, políticas de segurança, permissões de acesso, proteção de dados e responsabilidades do usuário. Essencial para todos os colaboradores.",
+    durationMinutes: 90,
+    thumbnailUrl: "https://private-us-east-1.manuscdn.com/sessionFile/2CKTBX4DHqsYpFG9sDRB7L/sandbox/zeO8vRUX6ohSdJ6p0l8XVp-img-2_1770896864000_na1fn_Y291cnNlLWVxdWlwbWVudC1wcmFjdGljZXM.jpg?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvMkNLVEJYNERIcXNZcEZHOXNEUkI3TC9zYW5kYm94L3plTzh2UlVYNm9oU2RKNnAwbDhYVnAtaW1nLTJfMTc3MDg5Njg2NDAwMF9uYTFmbl9ZMjkxY25ObExXVnhkV2x3YldWdWRDMXdjbUZqZEdsalpYTS5qcGc~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xOTIwLGhfMTkyMC9mb3JtYXQsd2VicC9xdWFsaXR5LHFfODAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=lQLkZeevck9RsafPKguVauRF-Gaj5fAHyAkhd9b3qFprEqDKG8Ny2D5T~R92wQY2VVfnWigjaak4ZVEz7ILFiMsBYi8MrETJsjOvgUXMM38b0BWGQnTykvWS77-JBzl-EK-XXjpR~can~8jKVpn3rCP1EAZW9Wqscq2ANRMUhpBKeslRIQSkIW-DPNEjMj~pURPLzmCw7ff1OFqgEV-VsAfo-3IlP1XeCaMVmt2OfnQBjj-x7nzDUSV5Eh9lanx~tDgGROn-8zirX1oDPosXlAABYOsC1yEbnOviocGxgVf23qc-lZn1KIhkjs4qdZAWM5UBTEyVLKENXtrr9lnBsw__",
+    contentType: "written",
+    contentData: "# Melhores Práticas de Uso de Equipamentos\n\n## Cuidados com Laptops\nManutenção, armazenamento e uso seguro...\n\n## Smartphones e Dispositivos Móveis\nPolitícas de uso, segurança e responsabilidade...\n\n## Acesso à Rede Interna\nConexão, VPN e protocolos de segurança...\n\n## Permissões e Acessos\nNíveis de acesso, autenticação e controle de dados...\n\n## Proteção de Dados\nBackup, criptografia e conformidade com políticas...",
     previewRules: {
-      type: "video",
-      value: "00:00:00 - 00:10:00"
+      type: "written",
+      value: "Introdução e primeiros 3 tópicos"
     },
     status: "published",
-    createdAt: "2025-01-10",
-    category: "Programação",
-    level: "advanced"
+    createdAt: "2025-02-01",
+    category: "Segurança",
+    level: "beginner"
   },
   {
     id: "course-003",

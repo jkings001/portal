@@ -33,7 +33,7 @@ export function registerOAuthRoutes(app: Express) {
         name: userInfo.name || null,
         email: userInfo.email ?? null,
         loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-        lastSignedIn: new Date(),
+        lastSignedIn: new Date().toISOString().slice(0, 19).replace('T', ' '),
       });
 
       const sessionToken = await sdk.createSessionToken(userInfo.openId, {
@@ -44,7 +44,8 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      res.redirect(302, "/");
+      const { ENV } = await import("./env");
+      res.redirect(302, ENV.frontendUrl || "/");
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });

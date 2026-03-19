@@ -70,7 +70,7 @@ export default function TrainingDashboard() {
       }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/30 to-black/50 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, rgba(15,23,42,0.3) 0%, rgba(0,0,0,0.7) 100%)' }} />
 
       <div className="relative z-10">
         {/* Header */}
@@ -79,9 +79,12 @@ export default function TrainingDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/images/logo-jkings.png" 
+                  src="/images/logo-jkings-dashboard.png" 
                   alt="JKINGS" 
-                  className="h-8"
+                  className="h-8 transition-all duration-300 hover:scale-110"
+                  style={{
+                    filter: 'drop-shadow(0 0 15px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 30px rgba(34, 211, 238, 0.2))'
+                  }}
                 />
                 <div>
                   <h1 className="text-white font-bold">Meus Treinamentos</h1>
@@ -90,7 +93,7 @@ export default function TrainingDashboard() {
               </div>
 
               <div className="flex items-center gap-4">
-                <BackButton />
+                <BackButton onClick={() => setLocation("/dashboard")} />
                 <div className="pl-4 border-l border-white/20">
                   <UserMenu showHome={true} />
                 </div>
@@ -103,9 +106,6 @@ export default function TrainingDashboard() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h2 className="text-4xl font-bold text-white mb-2">
-              Olá, {currentUser.name}! 👋
-            </h2>
             <p className="text-gray-300">
               Bem-vindo à sua área de treinamentos. Continue aprendendo!
             </p>
