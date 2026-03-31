@@ -3,19 +3,15 @@ import pool from "./db.js";
 
 const router = Router();
 
-// Empresa temporária para filtro
-const DEMO_COMPANY_ID = process.env.DEMO_COMPANY_ID || "1";
-
 // GET /api/showcase/tickets - Puxar tickets reais
 router.get("/showcase/tickets", async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [tickets] = await connection.query(
-      `SELECT id, title, description, status, priority, category, created_at, updated_at 
+      `SELECT id, ticketId, title, description, status, priority, userName, assignedToName, createdAt, updatedAt 
        FROM tickets 
-       WHERE company_id = ? 
-       LIMIT 100`,
-      [DEMO_COMPANY_ID]
+       ORDER BY createdAt DESC
+       LIMIT 100`
     );
     connection.release();
     res.json(tickets);
@@ -25,77 +21,25 @@ router.get("/showcase/tickets", async (req, res) => {
   }
 });
 
-// GET /api/showcase/categories - Puxar categorias
-router.get("/showcase/categories", async (req, res) => {
-  try {
-    const connection = await pool.getConnection();
-    const [categories] = await connection.query(
-      `SELECT id, name, description FROM categories WHERE company_id = ?`,
-      [DEMO_COMPANY_ID]
-    );
-    connection.release();
-    res.json(categories);
-  } catch (error) {
-    console.error("Erro ao buscar categorias:", error);
-    res.status(500).json({ error: "Erro ao buscar categorias" });
-  }
-});
-
-// GET /api/showcase/priorities - Puxar prioridades
-router.get("/showcase/priorities", async (req, res) => {
-  try {
-    const connection = await pool.getConnection();
-    const [priorities] = await connection.query(
-      `SELECT id, name, level FROM priorities WHERE company_id = ?`,
-      [DEMO_COMPANY_ID]
-    );
-    connection.release();
-    res.json(priorities);
-  } catch (error) {
-    console.error("Erro ao buscar prioridades:", error);
-    res.status(500).json({ error: "Erro ao buscar prioridades" });
-  }
-});
-
-// GET /api/showcase/users - Puxar usuários
-router.get("/showcase/users", async (req, res) => {
-  try {
-    const connection = await pool.getConnection();
-    const [users] = await connection.query(
-      `SELECT id, name, email, role FROM users WHERE company_id = ? LIMIT 50`,
-      [DEMO_COMPANY_ID]
-    );
-    connection.release();
-    res.json(users);
-  } catch (error) {
-    console.error("Erro ao buscar usuários:", error);
-    res.status(500).json({ error: "Erro ao buscar usuários" });
-  }
-});
-
 // GET /api/showcase/stats - Puxar estatísticas
 router.get("/showcase/stats", async (req, res) => {
   try {
     const connection = await pool.getConnection();
     
     const [openTickets] = await connection.query(
-      `SELECT COUNT(*) as count FROM tickets WHERE company_id = ? AND status = 'open'`,
-      [DEMO_COMPANY_ID]
+      `SELECT COUNT(*) as count FROM tickets WHERE status = 'pendente'`
     );
     
     const [inProgressTickets] = await connection.query(
-      `SELECT COUNT(*) as count FROM tickets WHERE company_id = ? AND status = 'in_progress'`,
-      [DEMO_COMPANY_ID]
+      `SELECT COUNT(*) as count FROM tickets WHERE status = 'em_andamento'`
     );
     
     const [resolvedTickets] = await connection.query(
-      `SELECT COUNT(*) as count FROM tickets WHERE company_id = ? AND status = 'resolved'`,
-      [DEMO_COMPANY_ID]
+      `SELECT COUNT(*) as count FROM tickets WHERE status = 'resolvido'`
     );
     
-    const [pendingTickets] = await connection.query(
-      `SELECT COUNT(*) as count FROM tickets WHERE company_id = ? AND status = 'pending'`,
-      [DEMO_COMPANY_ID]
+    const [closedTickets] = await connection.query(
+      `SELECT COUNT(*) as count FROM tickets WHERE status = 'fechado'`
     );
     
     connection.release();
@@ -104,7 +48,7 @@ router.get("/showcase/stats", async (req, res) => {
       open: openTickets[0]?.count || 0,
       inProgress: inProgressTickets[0]?.count || 0,
       resolved: resolvedTickets[0]?.count || 0,
-      pending: pendingTickets[0]?.count || 0,
+      pending: closedTickets[0]?.count || 0,
     });
   } catch (error) {
     console.error("Erro ao buscar estatísticas:", error);
@@ -112,34 +56,106 @@ router.get("/showcase/stats", async (req, res) => {
   }
 });
 
-// GET /api/showcase/trainings - Puxar treinamentos
-router.get("/showcase/trainings", async (req, res) => {
+// GET /api/showcase/tickets-by-priority - Puxar tickets por prioridade
+router.get("/showcase/tickets-by-priority", async (req, res) => {
   try {
     const connection = await pool.getConnection();
-    const [trainings] = await connection.query(
-      `SELECT id, title, description, category, status FROM trainings WHERE company_id = ? LIMIT 50`,
-      [DEMO_COMPANY_ID]
+    const [data] = await connection.query(
+      `SELECT priority, COUNT(*) as value FROM tickets GROUP BY priority`
     );
     connection.release();
-    res.json(trainings);
+    
+    const priorityMap: any = {
+      critica: "Crítica",
+      alta: "Alta",
+      media: "Média",
+      baixa: "Baixa",
+    };
+    
+    const colorMap: any = {
+      critica: "#ff4444",
+      alta: "#ff9900",
+      media: "#ffcc00",
+      baixa: "#00cc66",
+    };
+    
+    const result = data.map((item: any) => ({
+      name: priorityMap[item.priority] || item.priority,
+      value: item.value,
+      color: colorMap[item.priority] || "#00d4ff",
+    }));
+    
+    res.json(result);
   } catch (error) {
-    console.error("Erro ao buscar treinamentos:", error);
-    res.status(500).json({ error: "Erro ao buscar treinamentos" });
+    console.error("Erro ao buscar tickets por prioridade:", error);
+    res.status(500).json({ error: "Erro ao buscar tickets por prioridade" });
   }
 });
 
-// GET /api/showcase/companies - Puxar empresas
-router.get("/showcase/companies", async (req, res) => {
+// GET /api/showcase/tickets-by-status - Puxar tickets por status
+router.get("/showcase/tickets-by-status", async (req, res) => {
   try {
     const connection = await pool.getConnection();
-    const [companies] = await connection.query(
-      `SELECT id, name, email, phone FROM companies LIMIT 50`
+    const [data] = await connection.query(
+      `SELECT status, COUNT(*) as value FROM tickets GROUP BY status`
     );
     connection.release();
-    res.json(companies);
+    
+    const statusMap: any = {
+      pendente: "Pendente",
+      em_andamento: "Em Andamento",
+      resolvido: "Resolvido",
+      fechado: "Fechado",
+    };
+    
+    const result = data.map((item: any) => ({
+      name: statusMap[item.status] || item.status,
+      value: item.value,
+    }));
+    
+    res.json(result);
   } catch (error) {
-    console.error("Erro ao buscar empresas:", error);
-    res.status(500).json({ error: "Erro ao buscar empresas" });
+    console.error("Erro ao buscar tickets por status:", error);
+    res.status(500).json({ error: "Erro ao buscar tickets por status" });
+  }
+});
+
+// GET /api/showcase/tickets-by-department - Puxar tickets por departamento
+router.get("/showcase/tickets-by-department", async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [data] = await connection.query(
+      `SELECT department, COUNT(*) as value FROM tickets WHERE department IS NOT NULL GROUP BY department`
+    );
+    connection.release();
+    
+    const result = data.map((item: any) => ({
+      name: item.department || "Sem departamento",
+      value: item.value,
+    }));
+    
+    res.json(result);
+  } catch (error) {
+    console.error("Erro ao buscar tickets por departamento:", error);
+    res.status(500).json({ error: "Erro ao buscar tickets por departamento" });
+  }
+});
+
+// GET /api/showcase/recent-tickets - Puxar tickets recentes
+router.get("/showcase/recent-tickets", async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [tickets] = await connection.query(
+      `SELECT id, ticketId, title, status, priority, userName, createdAt 
+       FROM tickets 
+       ORDER BY createdAt DESC
+       LIMIT 10`
+    );
+    connection.release();
+    res.json(tickets);
+  } catch (error) {
+    console.error("Erro ao buscar tickets recentes:", error);
+    res.status(500).json({ error: "Erro ao buscar tickets recentes" });
   }
 });
 
