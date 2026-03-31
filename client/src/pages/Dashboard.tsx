@@ -1,12 +1,16 @@
 import { useLocation } from "wouter";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { dashboardData } from "@/lib/mockData";
+import { useStats, useTickets } from "@/hooks/useShowcaseData";
 import { ArrowLeft, TrendingUp, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import AuroraBackground from "@/components/AuroraBackground";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const { data: stats, loading: statsLoading } = useStats();
+  const { data: tickets, loading: ticketsLoading } = useTickets();
 
   const priorityColors = {
     "Crítica": "#ff4444",
@@ -46,7 +50,7 @@ export default function Dashboard() {
                 <h3 className="text-gray-300 text-sm font-semibold">Chamados Abertos</h3>
                 <AlertCircle className="text-red-400" size={24} />
               </div>
-              <p className="text-4xl font-bold text-white">{dashboardData.openTickets}</p>
+              <p className="text-4xl font-bold text-white">{statsLoading ? '-' : stats.open}</p>
               <p className="text-cyan-400 text-sm mt-2">+2 desde ontem</p>
             </div>
 
@@ -55,7 +59,7 @@ export default function Dashboard() {
                 <h3 className="text-gray-300 text-sm font-semibold">Em Andamento</h3>
                 <Clock className="text-yellow-400" size={24} />
               </div>
-              <p className="text-4xl font-bold text-white">{dashboardData.inProgressTickets}</p>
+              <p className="text-4xl font-bold text-white">{statsLoading ? '-' : stats.inProgress}</p>
               <p className="text-cyan-400 text-sm mt-2">Tempo médio: {dashboardData.averageResolutionTime}</p>
             </div>
 
@@ -64,7 +68,7 @@ export default function Dashboard() {
                 <h3 className="text-gray-300 text-sm font-semibold">Resolvidos</h3>
                 <CheckCircle className="text-green-400" size={24} />
               </div>
-              <p className="text-4xl font-bold text-white">{dashboardData.resolvedTickets}</p>
+              <p className="text-4xl font-bold text-white">{statsLoading ? '-' : stats.resolved}</p>
               <p className="text-cyan-400 text-sm mt-2">Taxa: {dashboardData.satisfactionRate}</p>
             </div>
 
@@ -73,7 +77,7 @@ export default function Dashboard() {
                 <h3 className="text-gray-300 text-sm font-semibold">Aguardando</h3>
                 <TrendingUp className="text-blue-400" size={24} />
               </div>
-              <p className="text-4xl font-bold text-white">{dashboardData.pendingTickets}</p>
+              <p className="text-4xl font-bold text-white">{statsLoading ? '-' : stats.pending}</p>
               <p className="text-cyan-400 text-sm mt-2">Resposta do cliente</p>
             </div>
           </div>
@@ -134,7 +138,15 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dashboardData.recentTickets.map((ticket) => (
+                  {ticketsLoading ? (
+                    <tr>
+                      <td colSpan={5} className="py-3 px-4 text-center text-gray-400">Carregando dados...</td>
+                    </tr>
+                  ) : tickets.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-3 px-4 text-center text-gray-400">Nenhum ticket encontrado</td>
+                    </tr>
+                  ) : tickets.slice(0, 10).map((ticket: any) => (
                     <tr key={ticket.id} className="border-b border-white/5 hover:bg-white/5 transition">
                       <td className="py-3 px-4 text-cyan-400 font-semibold">{ticket.id}</td>
                       <td className="py-3 px-4 text-white">{ticket.title}</td>
