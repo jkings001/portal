@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `profileImage` varchar(500);

@@ -1,1 +1,0 @@
-ALTER TABLE `companies` ADD `maxLicenses` int DEFAULT 10 NOT NULL;
